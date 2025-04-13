@@ -4,6 +4,15 @@ import { notFound } from 'next/navigation'
 
 export const dynamicParams = true
 
+export async function generateMetadata({params} : {params : any}) {
+    const id = params.id
+    const res = await fetch(`http://localhost:4000/tickets/${id}`)
+    const ticket = await res.json()
+    return {
+        title : `KAP helpdesk | ${ticket.title}`
+    }
+}
+
 export async function generateStaticParams() {
     
     const res = await fetch('http://localhost:4000/tickets')
