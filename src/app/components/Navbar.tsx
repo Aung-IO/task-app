@@ -3,6 +3,7 @@ import React from 'react'
 import Logo from "./dojo-logo.png"
 import Image from 'next/image'
 import { UserProps } from '../types/user'
+import LogoutBtn from './LogoutBtn'
 
 
 
@@ -15,6 +16,8 @@ export default async function Navbar({ user }: UserProps) {
       <Link href="/">Home</Link>
       <Link href="/tickets">Tickets</Link>
       {user && <span>Hello, {user.email}</span>}
+
+      {user && <LogoutBtn/>}
     </nav>
   )
 }
