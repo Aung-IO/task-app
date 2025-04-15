@@ -4,7 +4,7 @@ import { login } from "./actions";
 export default function LoginPage() {
   return (
     <main> 
-    <form>
+    <form className="auth-form">
       <label htmlFor="email">Email:</label>
       <input id="email" name="email" type="email" required />
       <label htmlFor="password">Password:</label>

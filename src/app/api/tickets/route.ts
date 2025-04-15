@@ -1,26 +1,49 @@
+import { createClient } from "@/app/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  const res = await fetch("http://localhost:4000/tickets");
-  const tickets = await res.json();
-
-  return NextResponse.json(tickets, {
-    status: 200,
-  });
-}
-
 export async function POST(requset: NextRequest) {
-  const data = await requset.json();
+  const ticket = await requset.json();
 
-  const res = await fetch("http://localhost:4000/tickets", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+  //  create supabase instance
+  const supabase = await createClient();
 
-  const newTicket = res.json();
+  // add current logged in user email
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  return NextResponse.json(newTicket, { status: 201 });
+  console.log("User : ", user);
+
+  if (!user ) {
+    return NextResponse.json(
+      { error: "User is not authenticated" },
+      { status: 401 }
+    );
+  }
+
+  console.log("Ticket Data :", ticket);
+
+  // insert data
+
+  const { data, error } = await supabase
+    .from("tickets")
+    .insert({
+      ...ticket,
+      user_email: user.email,
+    })
+    .select()
+    .single();
+
+  // Log error to check if there were any issues
+  if (error) {
+    console.error("Insert Error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  // Log data to verify insertion result
+  console.log("Inserted Data:", data);
+
+  return NextResponse.json({ data });
 }
